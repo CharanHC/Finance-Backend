@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Finance Data Processing and Access Control Backend",
   "main": "dist/server.js",
-  "scripts": {
+ "scripts": {
   "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-  "build": "npx prisma generate && tsc",
-  "start": "node dist/server.js"
+  "build": "tsc",
+  "start": "npx prisma generate && node dist/server.js"
 },
   "keywords": [],
   "author": "Charan",
