@@ -1,20 +1,20 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  binaryTargets = ["native", "debian-openssl-3.0.x"] // REQUIRED for Render
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
-  VIEWER
-  ANALYST
   ADMIN
+  ANALYST
+  VIEWER
 }
 
-enum Status {
+enum UserStatus {
   ACTIVE
   INACTIVE
 }
@@ -25,30 +25,37 @@ enum RecordType {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String      @id @default(cuid())
   name      String
-  email     String   @unique
+  email     String      @unique
   password  String
-  role      Role     @default(VIEWER)
-  status    Status   @default(ACTIVE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role        @default(VIEWER)
+  status    UserStatus  @default(ACTIVE)
 
-  records   FinancialRecord[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  records   FinancialRecord[] @relation("UserRecords")
 }
 
 model FinancialRecord {
-  id          String     @id @default(cuid())
+  id          String      @id @default(cuid())
   amount      Float
   type        RecordType
   category    String
   date        DateTime
   note        String?
-  isDeleted   Boolean    @default(false)
-  deletedAt   DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
 
-  createdBy   User       @relation(fields: [createdById], references: [id])
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
   createdById String
+  createdBy   User        @relation("UserRecords", fields: [createdById], references: [id])
+
+  @@index([createdById])
+  @@index([type])
+  @@index([date])
 }
