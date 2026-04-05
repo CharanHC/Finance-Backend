@@ -16,6 +16,7 @@ type PublicUser = {
   updatedAt: Date;
 };
 
+// ✅ Remove password before sending response
 const sanitizeUser = (user: User): PublicUser => ({
   id: user.id,
   name: user.name,
@@ -26,14 +27,21 @@ const sanitizeUser = (user: User): PublicUser => ({
   updatedAt: user.updatedAt
 });
 
+// ✅ JWT token generator
 const createToken = (userId: string, role: Role) => {
-  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId, role }, JWT_SECRET, {
+    expiresIn: '7d'
+  });
 };
 
 export const authService = {
+  // ================= REGISTER =================
   async register(input: { name: string; email: string; password: string }) {
+    // ✅ Normalize email (FIX)
+    const email = input.email.trim().toLowerCase();
+
     const existing = await prisma.user.findUnique({
-      where: { email: input.email }
+      where: { email }
     });
 
     if (existing) {
@@ -44,8 +52,8 @@ export const authService = {
 
     const user = await prisma.user.create({
       data: {
-        name: input.name,
-        email: input.email.toLowerCase(),
+        name: input.name.trim(),
+        email,
         password: hashedPassword,
         role: 'VIEWER',
         status: 'ACTIVE'
@@ -60,9 +68,16 @@ export const authService = {
     };
   },
 
+  // ================= LOGIN =================
   async login(input: { email: string; password: string }) {
+    // ✅ Normalize email (FIX — VERY IMPORTANT)
+    const email = input.email.trim().toLowerCase();
+
+    // 🔍 Debug (remove after testing)
+    console.log('LOGIN EMAIL:', email);
+
     const user = await prisma.user.findUnique({
-      where: { email: input.email.toLowerCase() }
+      where: { email }
     });
 
     if (!user) {
