@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { Prisma, Role, Status } from '@prisma/client';
+import { Prisma, Role, UserStatus } from '@prisma/client';
 import { prisma } from '../config/prisma';
 import { AppError } from '../utils/AppError';
 
@@ -19,7 +19,7 @@ export const userService = {
     email: string;
     password: string;
     role: Role;
-    status?: Status;
+    status?: UserStatus;
   }) {
     const existing = await prisma.user.findUnique({
       where: { email: input.email.toLowerCase() }
@@ -47,7 +47,7 @@ export const userService = {
   async listUsers(query: {
     search?: string;
     role?: Role;
-    status?: Status;
+    status?: UserStatus;
     page: number;
     limit: number;
   }) {
@@ -102,7 +102,7 @@ export const userService = {
       name?: string;
       email?: string;
       role?: Role;
-      status?: Status;
+      status?: UserStatus;
     }
   ) {
     const existing = await prisma.user.findUnique({ where: { id } });
@@ -124,7 +124,7 @@ export const userService = {
     return sanitizeUser(updated);
   },
 
-  async updateUserStatus(id: string, status: Status) {
+  async updateUserStatus(id: string, status: UserStatus) {
     const user = await prisma.user.findUnique({ where: { id } });
 
     if (!user) {
