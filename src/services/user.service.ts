@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { Prisma, Role, UserStatus } from '@prisma/client';
+import { Prisma, Role, Status } from '@prisma/client';
 import { prisma } from '../config/prisma';
 import { AppError } from '../utils/AppError';
 
