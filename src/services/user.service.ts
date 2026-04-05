@@ -19,7 +19,7 @@ export const userService = {
     email: string;
     password: string;
     role: Role;
-    status?: UserStatus;
+    status?: Status;
   }) {
     const existing = await prisma.user.findUnique({
       where: { email: input.email.toLowerCase() }
