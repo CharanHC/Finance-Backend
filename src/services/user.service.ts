@@ -47,7 +47,7 @@ export const userService = {
   async listUsers(query: {
     search?: string;
     role?: Role;
-    status?: UserStatus;
+    status?: Status;
     page: number;
     limit: number;
   }) {
@@ -102,7 +102,7 @@ export const userService = {
       name?: string;
       email?: string;
       role?: Role;
-      status?: UserStatus;
+      status?: Status;
     }
   ) {
     const existing = await prisma.user.findUnique({ where: { id } });
@@ -124,7 +124,7 @@ export const userService = {
     return sanitizeUser(updated);
   },
 
-  async updateUserStatus(id: string, status: UserStatus) {
+  async updateUserStatus(id: string, status: Status) {
     const user = await prisma.user.findUnique({ where: { id } });
 
     if (!user) {
